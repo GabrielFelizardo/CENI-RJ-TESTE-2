@@ -5,7 +5,7 @@
 
 const CENI_API = {
   // CONFIGURAÇÃO
-  BASE_URL: 'https://script.google.com/macros/s/SEU_DEPLOYMENT_ID/exec',
+  BASE_URL: 'https://script.google.com/macros/s/AKfycbzrWGvrjmuMaCxcLGewlRdcNqjPaPmn9y8x7Nn63GuFSI3f1211fW7l6NgkqlI0YVjGjQ/exec',
   CACHE_TIME: 5 * 60 * 1000, // 5 minutos
   
   // Cache local
