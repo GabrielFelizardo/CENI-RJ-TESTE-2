@@ -1,146 +1,184 @@
 /**
  * CENI-RJ Data Service
- * Serviço de comunicação com Google Sheets via Apps Script
+ * Serviço de integração com Google Sheets API
+ * Versão: 1.0
  */
 
 const CENI_API = {
-  // CONFIGURAÇÃO
   BASE_URL: 'https://script.google.com/macros/s/AKfycbzrWGvrjmuMaCxcLGewlRdcNqjPaPmn9y8x7Nn63GuFSI3f1211fW7l6NgkqlI0YVjGjQ/exec',
-  CACHE_TIME: 5 * 60 * 1000, // 5 minutos
   
-  // Cache local
-  cache: new Map(),
-  
+  // Cache local (5 minutos)
+  CACHE_TIME: 5 * 60 * 1000,
+  cache: {},
+
   /**
-   * Busca dados da API com cache
+   * Faz requisição à API com cache
    */
-  async fetch(action, params = {}) {
+  async _fetch(action, params = {}) {
     const cacheKey = `${action}_${JSON.stringify(params)}`;
-    
-    // Verificar cache local
-    const cached = this.cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < this.CACHE_TIME) {
-      console.log(`📦 Cache hit: ${action}`);
-      return cached.data;
+    const now = Date.now();
+
+    // Verifica cache
+    if (this.cache[cacheKey] && (now - this.cache[cacheKey].timestamp) < this.CACHE_TIME) {
+      console.log(`[CENI API] Cache hit: ${action}`);
+      return this.cache[cacheKey].data;
     }
-    
-    // Fazer requisição
-    const url = new URL(this.BASE_URL);
-    url.searchParams.set('action', action);
-    Object.entries(params).forEach(([key, value]) => {
-      url.searchParams.set(key, value);
-    });
-    
+
     try {
-      console.log(`🌐 Buscando: ${action}`);
-      const response = await fetch(url);
+      // Monta URL com parâmetros
+      const url = new URL(this.BASE_URL);
+      url.searchParams.append('action', action);
+      
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, value);
+      });
+
+      console.log(`[CENI API] Fetching: ${action}`, params);
+      
+      const response = await fetch(url.toString());
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const data = await response.json();
-      
-      // Verificar se há erro
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      
-      // Salvar no cache
-      this.cache.set(cacheKey, {
-        data,
-        timestamp: Date.now()
-      });
-      
-      console.log(`✅ Sucesso: ${action}`, data);
+
+      // Salva no cache
+      this.cache[cacheKey] = {
+        data: data,
+        timestamp: now
+      };
+
+      console.log(`[CENI API] Success: ${action}`, data);
       return data;
-      
+
     } catch (error) {
-      console.error(`❌ Erro ao buscar ${action}:`, error);
+      console.error(`[CENI API] Error: ${action}`, error);
       
-      // Tentar retornar cache antigo se houver
-      const oldCache = this.cache.get(cacheKey);
-      if (oldCache) {
-        console.log(`⚠️ Usando cache antigo para ${action}`);
-        return oldCache.data;
+      // Tenta usar cache antigo em caso de erro
+      if (this.cache[cacheKey]) {
+        console.warn(`[CENI API] Using stale cache for: ${action}`);
+        return this.cache[cacheKey].data;
       }
       
       throw error;
     }
   },
-  
-  // ========================================
-  // MÉTODOS ESPECÍFICOS
-  // ========================================
-  
+
   /**
-   * Busca eventos (todos ou filtrados por categoria)
+   * Busca eventos
    * @param {string} categoria - 'todos', 'reuniao', 'prazo', 'marco', 'ecossistema'
    */
   async getEventos(categoria = 'todos') {
-    return this.fetch('eventos', { categoria });
+    return await this._fetch('eventos', { categoria });
   },
-  
+
   /**
-   * Busca membros/organizações
+   * Busca membros e organizações
    */
   async getMembros() {
-    return this.fetch('membros');
+    return await this._fetch('membros');
   },
-  
+
   /**
-   * Busca documentos (todos ou filtrados por categoria)
+   * Busca documentos
    * @param {string} categoria - 'todos', 'institucionais', 'atas', 'relatorios', 'materiais'
    */
   async getDocumentos(categoria = 'todos') {
-    return this.fetch('documentos', { categoria });
+    return await this._fetch('documentos', { categoria });
   },
-  
+
   /**
-   * Busca perguntas frequentes
+   * Busca FAQ
    */
   async getFAQ() {
-    return this.fetch('faq');
+    return await this._fetch('faq');
   },
-  
+
   /**
-   * Busca estatísticas do comitê
+   * Busca estatísticas
    */
   async getStats() {
-    return this.fetch('stats');
+    return await this._fetch('stats');
   },
-  
+
   /**
    * Busca notícias em destaque
    */
   async getDestaques() {
-    return this.fetch('destaques');
+    return await this._fetch('destaques');
   },
-  
+
   /**
    * Busca configurações de categorias
    */
   async getCategorias() {
-    return this.fetch('categorias');
+    return await this._fetch('categorias');
   },
-  
+
   /**
-   * Limpa todo o cache local
+   * Limpa cache local
    */
   clearLocalCache() {
-    this.cache.clear();
-    console.log('🗑️ Cache local limpo');
+    this.cache = {};
+    console.log('[CENI API] Cache local limpo');
   },
-  
+
   /**
-   * Força atualização (limpa cache e busca novamente)
+   * Força atualização (ignora cache)
    */
   async forceRefresh(action, params = {}) {
     const cacheKey = `${action}_${JSON.stringify(params)}`;
-    this.cache.delete(cacheKey);
-    return this.fetch(action, params);
+    delete this.cache[cacheKey];
+    return await this._fetch(action, params);
   }
 };
 
-// Expor globalmente
-window.CENI_API = CENI_API;
+/**
+ * Utilitários de formatação
+ */
+const CENI_Utils = {
+  /**
+   * Formata data para exibição
+   */
+  formatarData(dataString) {
+    if (!dataString) return '';
+    
+    const [ano, mes, dia] = dataString.split('-');
+    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 
+                   'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    
+    return {
+      dia: dia,
+      mes: meses[parseInt(mes) - 1],
+      ano: ano,
+      completo: `${dia}/${mes}/${ano}`
+    };
+  },
+
+  /**
+   * Gera ícone Font Awesome
+   */
+  gerarIcone(nomeIcone) {
+    return `<i class="fa-solid fa-${nomeIcone}"></i>`;
+  },
+
+  /**
+   * Gera badge colorido
+   */
+  gerarBadge(texto, cor) {
+    return `<span class="badge" style="background-color: ${cor}">${texto}</span>`;
+  },
+
+  /**
+   * Verifica se string está vazia
+   */
+  isEmpty(str) {
+    return !str || str.trim() === '' || str === '-';
+  }
+};
+
+// Log de inicialização
+console.log('[CENI API] Data Service carregado - v1.0');
+console.log('[CENI API] Base URL:', CENI_API.BASE_URL);
+console.log('[CENI API] Cache time:', CENI_API.CACHE_TIME / 1000, 'segundos');
