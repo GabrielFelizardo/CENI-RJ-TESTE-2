@@ -1,10 +1,15 @@
 /**
  * ============================================
- * CENI-RJ - Frontend API Client
+ * CENI-RJ - Frontend API Client (CORRIGIDO)
  * ============================================
  * 
  * Consome dados do Google Sheets via Apps Script
  * e renderiza dinamicamente na página
+ * 
+ * CORREÇÕES v1.1:
+ * - ✅ Timezone fix para datas (era -1 dia)
+ * - ✅ Contadores de eventos funcionando
+ * - ✅ Renderização de documentos corrigida
  */
 
 // ============================================
@@ -12,6 +17,7 @@
 // ============================================
 
 const CENI_API = {
+  // ⚠️ SUBSTITUIR PELA URL DO SEU APPS SCRIPT
   URL: 'https://script.google.com/macros/s/AKfycbwsvOjSDjDINcjOz2O8qCXQIebL8XzWmKrbMHT7rmJDUjov2razcVPIGT3v7ne1jEw0jg/exec',
   
   // Cache local (5 minutos)
@@ -153,10 +159,16 @@ async function renderizarDocumentos() {
     // Buscar dados
     const data = await fetchCENIData('documentos');
     
-    if (!data || !data.documentos || data.documentos.length === 0) {
+    // ✅ FIX: Verificar estrutura correta dos dados
+    const documentosData = data.documentos || data;
+    
+    if (!documentosData || documentosData.length === 0) {
       container.innerHTML = '<div class="empty-state">Nenhum documento disponível</div>';
       return;
     }
+    
+    // Agrupar por categoria
+    const porCategoria = data.porCategoria || agruparPorCategoria(documentosData);
     
     // Renderizar por categoria
     const categorias = {
@@ -169,7 +181,7 @@ async function renderizarDocumentos() {
     let html = '';
     
     for (const [categoriaKey, categoriaNome] of Object.entries(categorias)) {
-      const docs = data.porCategoria[categoriaKey] || [];
+      const docs = porCategoria[categoriaKey] || [];
       
       if (docs.length === 0) continue;
       
@@ -191,7 +203,13 @@ async function renderizarDocumentos() {
       `;
     }
     
-    container.innerHTML = html;
+    if (html === '') {
+      container.innerHTML = '<div class="empty-state">Nenhum documento disponível</div>';
+    } else {
+      container.innerHTML = html;
+    }
+    
+    console.log('✅ Documentos renderizados:', documentosData.length);
     
   } catch (error) {
     console.error('Erro ao renderizar documentos:', error);
@@ -202,6 +220,25 @@ async function renderizarDocumentos() {
       </div>
     `;
   }
+}
+
+// Função auxiliar para agrupar documentos por categoria
+function agruparPorCategoria(documentos) {
+  const grupos = {
+    'institucionais': [],
+    'atas': [],
+    'relatorios': [],
+    'materiais': []
+  };
+  
+  documentos.forEach(doc => {
+    const cat = doc.categoria || 'materiais';
+    if (grupos[cat]) {
+      grupos[cat].push(doc);
+    }
+  });
+  
+  return grupos;
 }
 
 function criarCardDocumento(doc, numero) {
@@ -268,7 +305,10 @@ async function renderizarEventos() {
     // Buscar dados
     const data = await fetchCENIData('eventos');
     
-    if (!data || !data.eventos || data.eventos.length === 0) {
+    // ✅ FIX: Verificar estrutura correta dos dados
+    const eventosData = data.eventos || data;
+    
+    if (!eventosData || eventosData.length === 0) {
       container.innerHTML = '<div class="empty-state">Nenhum evento disponível</div>';
       return;
     }
@@ -276,11 +316,16 @@ async function renderizarEventos() {
     // Renderizar eventos
     let html = '';
     
-    data.eventos.forEach(evento => {
+    eventosData.forEach(evento => {
       html += criarCardEvento(evento);
     });
     
     container.innerHTML = html;
+    
+    // ✅ FIX: Atualizar contadores após renderizar
+    setTimeout(() => updateEventCounts(), 100);
+    
+    console.log('✅ Eventos renderizados:', eventosData.length);
     
   } catch (error) {
     console.error('Erro ao renderizar eventos:', error);
@@ -294,10 +339,14 @@ async function renderizarEventos() {
 }
 
 function criarCardEvento(evento) {
-  const data = new Date(evento.data_evento);
-  const dia = data.getDate();
-  const mes = data.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase();
-  const ano = data.getFullYear();
+  // ✅ FIX: Corrigir timezone para não perder 1 dia
+  // Criar data no timezone local
+  const [ano, mes, dia] = evento.data_evento.split('-').map(Number);
+  const data = new Date(ano, mes - 1, dia); // mes-1 porque JavaScript conta de 0-11
+  
+  const diaFormatado = data.getDate();
+  const mesFormatado = data.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase();
+  const anoFormatado = data.getFullYear();
   
   const categoriaClasses = {
     'reuniao': 'reuniao',
@@ -333,9 +382,9 @@ function criarCardEvento(evento) {
   return `
     <article class="evento-card" data-category="${evento.categoria}" data-animate="fade-up">
       <div class="evento-date-box">
-        <div class="evento-day">${dia}</div>
-        <div class="evento-month">${mes}</div>
-        <div class="evento-year">${ano}</div>
+        <div class="evento-day">${diaFormatado}</div>
+        <div class="evento-month">${mesFormatado}</div>
+        <div class="evento-year">${anoFormatado}</div>
       </div>
       <div class="evento-content">
         <div class="evento-header">
@@ -377,6 +426,42 @@ function criarCardEvento(evento) {
   `;
 }
 
+// ✅ FIX: Função para atualizar contadores de eventos
+function updateEventCounts() {
+  const eventoCards = document.querySelectorAll('.evento-card');
+  
+  if (eventoCards.length === 0) {
+    console.warn('Nenhum evento encontrado para contar');
+    return;
+  }
+  
+  // Contar por categoria
+  const counts = {
+    todos: eventoCards.length,
+    reuniao: 0,
+    prazo: 0,
+    marco: 0,
+    ecossistema: 0
+  };
+  
+  eventoCards.forEach(card => {
+    const category = card.getAttribute('data-category');
+    if (counts.hasOwnProperty(category)) {
+      counts[category]++;
+    }
+  });
+  
+  // Atualizar badges
+  Object.keys(counts).forEach(key => {
+    const badge = document.getElementById(`count-${key}`);
+    if (badge) {
+      badge.textContent = counts[key];
+    }
+  });
+  
+  console.log('📊 Contadores atualizados:', counts);
+}
+
 // ============================================
 // UTILITÁRIOS
 // ============================================
@@ -384,7 +469,10 @@ function criarCardEvento(evento) {
 function formatarData(dataStr) {
   if (!dataStr) return '';
   
-  const data = new Date(dataStr);
+  // ✅ FIX: Mesma correção de timezone
+  const [ano, mes, dia] = dataStr.split('-').map(Number);
+  const data = new Date(ano, mes - 1, dia);
+  
   return data.toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'long',
@@ -404,12 +492,16 @@ function limparCacheLocal() {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 CENI API Client inicializando...');
+  
   // Detectar página e renderizar conteúdo apropriado
   if (document.getElementById('documentos-container')) {
+    console.log('📄 Detectada página de documentos');
     renderizarDocumentos();
   }
   
   if (document.getElementById('eventos-container')) {
+    console.log('📅 Detectada página de eventos');
     renderizarEventos();
   }
 });
@@ -422,5 +514,8 @@ window.CENI = {
   renderizarDocumentos,
   renderizarEventos,
   limparCache: limparCacheLocal,
-  fetchData: fetchCENIData
+  fetchData: fetchCENIData,
+  updateEventCounts  // ✅ Expor função de contadores
 };
+
+console.log('✅ CENI API Client carregado (v1.1 - CORRIGIDO)');
