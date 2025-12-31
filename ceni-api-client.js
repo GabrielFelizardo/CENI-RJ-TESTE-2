@@ -18,7 +18,7 @@
 
 const CENI_API = {
   // ⚠️ SUBSTITUIR PELA URL DO SEU APPS SCRIPT
-  URL: 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec',
+  URL: 'https://script.google.com/macros/s/AKfycbwsvOjSDjDINcjOz2O8qCXQIebL8XzWmKrbMHT7rmJDUjov2razcVPIGT3v7ne1jEw0jg/exec',
   
   // Cache local (5 minutos)
   CACHE_DURATION: 5 * 60 * 1000,
