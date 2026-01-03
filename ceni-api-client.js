@@ -1,15 +1,12 @@
 /**
  * ============================================
- * CENI-RJ - Frontend API Client (CORRIGIDO)
+ * CENI-RJ - Frontend API Client v2 (CORRIGIDO)
  * ============================================
  * 
  * Consome dados do Google Sheets via Apps Script
  * e renderiza dinamicamente na página
  * 
- * CORREÇÕES v1.1:
- * - ✅ Timezone fix para datas (era -1 dia)
- * - ✅ Contadores de eventos funcionando
- * - ✅ Renderização de documentos corrigida
+ * VERSÃO 2.0 - SUPORTE À TIMELINE
  */
 
 // ============================================
@@ -27,6 +24,7 @@ const CENI_API = {
   CACHE_KEYS: {
     DOCUMENTOS: 'ceni_documentos_cache',
     EVENTOS: 'ceni_eventos_cache',
+    TIMELINE: 'ceni_timeline_cache',  // ✅ NOVO!
     TIMESTAMP: 'ceni_cache_timestamp'
   }
 };
@@ -100,17 +98,21 @@ function getCachedData(tipo, ignoreExpiration = false) {
     if (tipo === 'all') {
       const docs = localStorage.getItem(CENI_API.CACHE_KEYS.DOCUMENTOS);
       const eventos = localStorage.getItem(CENI_API.CACHE_KEYS.EVENTOS);
+      const timeline = localStorage.getItem(CENI_API.CACHE_KEYS.TIMELINE);
       
-      if (docs && eventos) {
+      if (docs && eventos && timeline) {
         return {
           documentos: JSON.parse(docs),
-          eventos: JSON.parse(eventos)
+          eventos: JSON.parse(eventos),
+          timeline: JSON.parse(timeline)
         };
       }
     } else if (tipo === 'documentos') {
       cacheKey = CENI_API.CACHE_KEYS.DOCUMENTOS;
     } else if (tipo === 'eventos') {
       cacheKey = CENI_API.CACHE_KEYS.EVENTOS;
+    } else if (tipo === 'timeline') {  // ✅ NOVO!
+      cacheKey = CENI_API.CACHE_KEYS.TIMELINE;
     }
     
     if (cacheKey) {
@@ -131,10 +133,13 @@ function saveCacheData(tipo, data) {
     if (tipo === 'all') {
       localStorage.setItem(CENI_API.CACHE_KEYS.DOCUMENTOS, JSON.stringify(data.documentos));
       localStorage.setItem(CENI_API.CACHE_KEYS.EVENTOS, JSON.stringify(data.eventos));
+      localStorage.setItem(CENI_API.CACHE_KEYS.TIMELINE, JSON.stringify(data.timeline));  // ✅ NOVO!
     } else if (tipo === 'documentos') {
       localStorage.setItem(CENI_API.CACHE_KEYS.DOCUMENTOS, JSON.stringify(data));
     } else if (tipo === 'eventos') {
       localStorage.setItem(CENI_API.CACHE_KEYS.EVENTOS, JSON.stringify(data));
+    } else if (tipo === 'timeline') {  // ✅ NOVO!
+      localStorage.setItem(CENI_API.CACHE_KEYS.TIMELINE, JSON.stringify(data));
     }
     
     localStorage.setItem(CENI_API.CACHE_KEYS.TIMESTAMP, Date.now().toString());
@@ -340,9 +345,8 @@ async function renderizarEventos() {
 
 function criarCardEvento(evento) {
   // ✅ FIX: Corrigir timezone para não perder 1 dia
-  // Criar data no timezone local
   const [ano, mes, dia] = evento.data_evento.split('-').map(Number);
-  const data = new Date(ano, mes - 1, dia); // mes-1 porque JavaScript conta de 0-11
+  const data = new Date(ano, mes - 1, dia);
   
   const diaFormatado = data.getDate();
   const mesFormatado = data.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase();
@@ -483,6 +487,7 @@ function formatarData(dataStr) {
 function limparCacheLocal() {
   localStorage.removeItem(CENI_API.CACHE_KEYS.DOCUMENTOS);
   localStorage.removeItem(CENI_API.CACHE_KEYS.EVENTOS);
+  localStorage.removeItem(CENI_API.CACHE_KEYS.TIMELINE);  // ✅ NOVO!
   localStorage.removeItem(CENI_API.CACHE_KEYS.TIMESTAMP);
   console.log('🧹 Cache local limpo!');
 }
@@ -518,4 +523,4 @@ window.CENI = {
   updateEventCounts  // ✅ Expor função de contadores
 };
 
-console.log('✅ CENI API Client carregado (v1.1 - CORRIGIDO)');
+console.log('✅ CENI API Client carregado (v2.0 - COM SUPORTE À TIMELINE)');
