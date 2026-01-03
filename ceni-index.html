@@ -34,11 +34,6 @@
             --text-primary: #000000;
             --text-secondary: #666666;
             --grid-line: #e0e0e0;
-            --gt1-color: #1e3a8a;
-            --gt2-color: #1e5631;
-            --gt3-color: #e89bb8;
-            --gt4-color: #e8632e;
-            --gt5-color: #f4b942;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -125,7 +120,7 @@
                 right: 0;
                 bottom: 0;
                 background: transparent;
-                z-index: 9998;
+                z-index: 10000;
                 transition: opacity 0.3s ease;
             }
             .mobile-overlay.active { display: block; }
@@ -690,25 +685,9 @@
                     </p>
                 </div>
                 
+                <!-- ✅ TIMELINE DINÂMICA - CONTEÚDO CARREGADO VIA JAVASCRIPT -->
                 <div class="timeline" style="grid-column: 1 / -1;">
-                    <div class="timeline-item" data-animate="fade-right" data-delay="0">
-                        <div class="timeline-month">Janeiro 2026</div>
-                        <ul>
-                            <li>Contribuições para o Regimento Interno</li>
-                            <li>Inserção em Grupos de Trabalho</li>
-                            <li>Indicação para Colíderes</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="timeline-item" data-animate="fade-left" data-delay="200">
-                        <div class="timeline-month">Fevereiro - Março 2026</div>
-                        <ul>
-                            <li>Consolidação do Regimento Interno</li>
-                            <li>Assinatura ACT | FAPERJ</li>
-                            <li>1ª Reunião Ordinária</li>
-                            <li>Construção Inicial de Estratégia Estadual</li>
-                        </ul>
-                    </div>
+                    <!-- Timeline carregada dinamicamente via ceni-timeline-dinamico.js -->
                 </div>
                 
                 <div class="col-full" style="text-align: center; margin-top: 2rem;" data-animate="fade-up" data-delay="400">
@@ -795,10 +774,11 @@
         </div>
     </footer>
 
-    <!-- Sistema de Animações -->
-    <script src="ceni-animations.js"></script>
-    <script src="ceni-timeline-dinamico.js"></script>
-    <script src="ceni-footer-enhanced.js"></script>
+    <!-- ✅ Scripts do Sistema Dinâmico (ORDEM IMPORTANTE!) -->
+    <script src="ceni-api-client.js"></script>        <!-- 1º - API Client -->
+    <script src="ceni-timeline-dinamico.js"></script> <!-- 2º - Timeline Dinâmica -->
+    <script src="ceni-animations.js"></script>         <!-- 3º - Animações -->
+    <script src="ceni-footer-enhanced.js"></script>    <!-- 4º - Footer -->
 
     <!-- Scripts do Site -->
     <script>
