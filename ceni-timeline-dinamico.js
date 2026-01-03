@@ -23,11 +23,22 @@ async function renderizarTimeline() {
             return;
         }
         
+        // ✅ FILTRAR: Apenas itens com status "ativo" ou "concluido"
+        const marcosAtivos = timelineData.filter(marco => {
+            const status = (marco.status || '').toLowerCase().trim();
+            return status === 'ativo' || status === 'concluido';
+        });
+        
+        if (marcosAtivos.length === 0) {
+            console.log('⚠️ Nenhum marco ativo/concluído encontrado');
+            return;
+        }
+        
         // Limpar container
         container.innerHTML = '';
         
-        // Renderizar cada marco
-        timelineData.forEach((marco, index) => {
+        // Renderizar apenas marcos ativos/concluídos
+        marcosAtivos.forEach((marco, index) => {
             const card = criarCardTimeline(marco, index);
             container.appendChild(card);
         });
@@ -39,7 +50,7 @@ async function renderizarTimeline() {
             }
         }, 100);
         
-        console.log(`✅ Timeline renderizada: ${timelineData.length} marcos`);
+        console.log(`✅ Timeline renderizada: ${marcosAtivos.length} marcos ativos (${timelineData.length - marcosAtivos.length} ocultos)`);
         
     } catch (error) {
         console.error('❌ Erro ao renderizar timeline:', error);
@@ -104,7 +115,6 @@ const CENI_API_TIMELINE = {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Aguardar um pouco para garantir que ceni-api-client.js foi carregado
     if (document.querySelector('.timeline')) {
         console.log('🚀 Detectada página com timeline');
         setTimeout(renderizarTimeline, 500);
