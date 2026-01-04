@@ -210,17 +210,23 @@ class TimelineCarousel {
     
     // Navegação
     next() {
-        if (this.currentIndex < this.maxIndex) {
+        // Navegação infinita: se estiver no último, volta pro primeiro
+        if (this.currentIndex >= this.maxIndex) {
+            this.currentIndex = 0;
+        } else {
             this.currentIndex++;
-            this.updateView();
         }
+        this.updateView();
     }
     
     prev() {
-        if (this.currentIndex > 0) {
+        // Navegação infinita: se estiver no primeiro, vai pro último
+        if (this.currentIndex <= 0) {
+            this.currentIndex = this.maxIndex;
+        } else {
             this.currentIndex--;
-            this.updateView();
         }
+        this.updateView();
     }
     
     goTo(index) {
@@ -239,9 +245,9 @@ class TimelineCarousel {
         // Aplicar transformação
         this.carousel.style.transform = `translateX(${offset}px)`;
         
-        // Atualizar botões
-        this.prevBtn.disabled = this.currentIndex === 0;
-        this.nextBtn.disabled = this.currentIndex === this.maxIndex;
+        // Navegação infinita: botões sempre habilitados
+        this.prevBtn.disabled = false;
+        this.nextBtn.disabled = false;
         
         // Atualizar indicadores
         const dots = this.indicators.querySelectorAll('.carousel-dot');
