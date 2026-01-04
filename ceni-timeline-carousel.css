@@ -107,10 +107,6 @@
     transform: translateY(-50%) scale(1.1);
 }
 
-.carousel-nav.prev {
-    left: 1rem; /* Dentro do container com espaçamento */
-}
-
 .carousel-nav.next {
     right: 1rem; /* Dentro do container com espaçamento */
 }
@@ -175,21 +171,13 @@
         font-size: 1rem;
     }
     
-    /* Manter setas dentro do container em todos os tamanhos */
-    .carousel-nav.prev {
-        left: 0.5rem;
-    }
-    
+    /* Manter seta dentro do container em todos os tamanhos */
     .carousel-nav.next {
         right: 0.5rem;
     }
 }
 
 @media (max-width: 576px) {
-    .carousel-nav.prev {
-        left: 0;
-    }
-    
     .carousel-nav.next {
         right: 0;
     }
