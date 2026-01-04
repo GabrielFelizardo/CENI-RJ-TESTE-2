@@ -43,28 +43,15 @@ class TimelineCarousel {
     }
     
     createControls() {
-        // Wrapper para navegação
-        const nav = document.createElement('div');
-        nav.className = 'carousel-navigation';
-        
-        // Botão Anterior
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'carousel-nav prev';
-        prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-        prevBtn.setAttribute('aria-label', 'Anterior');
-        prevBtn.onclick = () => this.prev();
-        
-        // Botão Próximo
+        // Botão Próximo (apenas direita)
         const nextBtn = document.createElement('button');
         nextBtn.className = 'carousel-nav next';
         nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
         nextBtn.setAttribute('aria-label', 'Próximo');
         nextBtn.onclick = () => this.next();
         
-        this.prevBtn = prevBtn;
         this.nextBtn = nextBtn;
         
-        this.container.appendChild(prevBtn);
         this.container.appendChild(nextBtn);
         
         // Indicadores (dots)
@@ -116,10 +103,9 @@ class TimelineCarousel {
         this.carousel.addEventListener('mouseup', (e) => this.handleMouseEnd(e));
         this.carousel.addEventListener('mouseleave', (e) => this.handleMouseEnd(e));
         
-        // Keyboard navigation
+        // Keyboard navigation (apenas seta direita)
         document.addEventListener('keydown', (e) => {
             if (this.isInViewport()) {
-                if (e.key === 'ArrowLeft') this.prev();
                 if (e.key === 'ArrowRight') this.next();
             }
         });
@@ -149,9 +135,8 @@ class TimelineCarousel {
         const diff = this.currentX - this.startX;
         const threshold = 50; // pixels
         
-        if (diff > threshold) {
-            this.prev();
-        } else if (diff < -threshold) {
+        // Apenas swipe para esquerda avança (diff negativo)
+        if (diff < -threshold) {
             this.next();
         } else {
             this.updateView(); // Voltar para posição original
@@ -186,9 +171,8 @@ class TimelineCarousel {
         const diff = this.currentX - this.startX;
         const threshold = 50;
         
-        if (diff > threshold) {
-            this.prev();
-        } else if (diff < -threshold) {
+        // Apenas arrastar para esquerda avança (diff negativo)
+        if (diff < -threshold) {
             this.next();
         } else {
             this.updateView();
@@ -245,8 +229,7 @@ class TimelineCarousel {
         // Aplicar transformação
         this.carousel.style.transform = `translateX(${offset}px)`;
         
-        // Navegação infinita: botões sempre habilitados
-        this.prevBtn.disabled = false;
+        // Navegação infinita: botão sempre habilitado (apenas next)
         this.nextBtn.disabled = false;
         
         // Atualizar indicadores
