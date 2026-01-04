@@ -12,7 +12,7 @@ async function renderizarTimeline() {
     if (!container) return;
     
     try {
-        console.log('📋 Carregando timeline...');
+        console.log('📋 Carregando timeline em carrossel...');
         
         // Buscar dados da timeline
         const data = await fetchCENIData('timeline');
@@ -34,23 +34,33 @@ async function renderizarTimeline() {
             return;
         }
         
-        // Limpar container
+        // ✅ CRIAR ESTRUTURA DO CARROSSEL
+        container.className = 'timeline-carousel-container';
         container.innerHTML = '';
         
-        // Renderizar apenas marcos ativos/concluídos
+        // Criar o carrossel interno
+        const carousel = document.createElement('div');
+        carousel.className = 'timeline-carousel';
+        
+        // Renderizar cards no carrossel
         marcosAtivos.forEach((marco, index) => {
             const card = criarCardTimeline(marco, index);
-            container.appendChild(card);
+            carousel.appendChild(card);
         });
         
-        // Aplicar animações
+        container.appendChild(carousel);
+        
+        // ✅ INICIALIZAR CARROSSEL
         setTimeout(() => {
+            const carouselInstance = new TimelineCarousel(container);
+            
+            // Aplicar animações do sistema
             if (window.CENIScroll && window.CENIScroll.refresh) {
                 window.CENIScroll.refresh();
             }
+            
+            console.log(`✅ Timeline em carrossel renderizada: ${marcosAtivos.length} marcos ativos (${timelineData.length - marcosAtivos.length} ocultos)`);
         }, 100);
-        
-        console.log(`✅ Timeline renderizada: ${marcosAtivos.length} marcos ativos (${timelineData.length - marcosAtivos.length} ocultos)`);
         
     } catch (error) {
         console.error('❌ Erro ao renderizar timeline:', error);
@@ -62,15 +72,10 @@ function criarCardTimeline(marco, index) {
     const card = document.createElement('div');
     card.className = 'timeline-item';
     
-    // Alternar animações
-    const animacao = index % 2 === 0 ? 'fade-right' : 'fade-left';
-    card.setAttribute('data-animate', animacao);
-    card.setAttribute('data-delay', (index * 200).toString());
-    
     // Status badge (opcional)
     let statusBadge = '';
     if (marco.status === 'concluido') {
-        statusBadge = '<span class="badge-concluido" style="display: inline-block; background: #10b981; color: white; padding: 0.25rem 0.75rem; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-left: 0.5rem; border-radius: 2px;">✓ Concluído</span>';
+        statusBadge = '<span class="badge-concluido">✓ Concluído</span>';
     }
     
     // Montar HTML
@@ -115,6 +120,7 @@ const CENI_API_TIMELINE = {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Aguardar um pouco para garantir que ceni-api-client.js foi carregado
     if (document.querySelector('.timeline')) {
         console.log('🚀 Detectada página com timeline');
         setTimeout(renderizarTimeline, 500);
