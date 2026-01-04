@@ -29,10 +29,10 @@ async function renderizarTimeline() {
             return;
         }
         
-        // ✅ FILTRAR: Apenas itens com status "ativo" ou "concluido"
+        // ✅ FILTRAR: Apenas itens com status "ativo"
         const marcosAtivos = timelineData.filter(marco => {
             const status = (marco.status || '').toLowerCase().trim();
-            return status === 'ativo' || status === 'concluido';
+            return status === 'ativo';
         });
         
         // 🔍 DEBUG: Mostrar resultado do filtro
@@ -96,15 +96,9 @@ function criarCardTimeline(marco, index) {
     const card = document.createElement('div');
     card.className = 'timeline-item';
     
-    // Status badge (opcional)
-    let statusBadge = '';
-    if (marco.status === 'concluido') {
-        statusBadge = '<span class="badge-concluido">✓ Concluído</span>';
-    }
-    
     // Montar HTML
     let html = `
-        <div class="timeline-month">${marco.periodo}${statusBadge}</div>
+        <div class="timeline-month">${marco.periodo}</div>
     `;
     
     // Adicionar título se existir
