@@ -92,13 +92,9 @@ async function renderizarTimeline() {
 }
 
 function criarCardTimeline(marco, index) {
-    // ✅ CRIAR LINK CLICÁVEL em vez de div simples
-    const card = document.createElement('a');
+    // Card informativo simples (não clicável)
+    const card = document.createElement('div');
     card.className = 'timeline-item';
-    card.href = `ceni-marco-detalhe.html?id=${encodeURIComponent(marco.id || marco.periodo)}`;
-    card.style.textDecoration = 'none';
-    card.style.color = 'inherit';
-    card.setAttribute('aria-label', `Ver detalhes: ${marco.periodo}`);
     
     // Status badge (opcional)
     let statusBadge = '';
@@ -116,22 +112,14 @@ function criarCardTimeline(marco, index) {
         html += `<div style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; opacity: 0.9;">${marco.titulo}</div>`;
     }
     
-    // Adicionar lista de itens (prévia - primeiros 3)
+    // Adicionar TODOS os itens (sem limite)
     if (marco.itens && marco.itens.length > 0) {
         html += '<ul>';
-        const previewItems = marco.itens.slice(0, 3);
-        previewItems.forEach(item => {
+        marco.itens.forEach(item => {
             html += `<li>${item}</li>`;
         });
-        // Mostrar indicador se houver mais itens
-        if (marco.itens.length > 3) {
-            html += `<li style="opacity: 0.6; font-style: italic;">+ ${marco.itens.length - 3} atividades...</li>`;
-        }
         html += '</ul>';
     }
-    
-    // Adicionar indicador visual de "clicável"
-    html += '<div style="margin-top: 1.5rem; font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary);">Ver Detalhes →</div>';
     
     card.innerHTML = html;
     
