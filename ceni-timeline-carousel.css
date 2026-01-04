@@ -21,8 +21,8 @@
 
 /* Cards da Timeline no Carrossel */
 .timeline-carousel .timeline-item {
-    flex: 0 0 calc(50% - 1rem);
-    min-width: calc(50% - 1rem);
+    flex: 0 0 100%; /* Sempre ocupar largura completa */
+    min-width: 100%;
     border: 4px solid var(--accent);
     padding: 2rem;
     background: white;
@@ -174,11 +174,6 @@
 
 /* Responsive */
 @media (max-width: 968px) {
-    .timeline-carousel .timeline-item {
-        flex: 0 0 100%;
-        min-width: 100%;
-    }
-    
     .carousel-nav {
         width: 40px;
         height: 40px;
