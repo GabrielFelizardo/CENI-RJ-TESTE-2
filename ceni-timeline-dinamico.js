@@ -18,6 +18,12 @@ async function renderizarTimeline() {
         const data = await fetchCENIData('timeline');
         const timelineData = data.marcos || data;
         
+        // 🔍 DEBUG: Mostrar TODOS os dados recebidos
+        console.group('🔍 DEBUG - Dados Recebidos da API');
+        console.log('Total de marcos na planilha:', timelineData.length);
+        console.table(timelineData);
+        console.groupEnd();
+        
         if (!timelineData || timelineData.length === 0) {
             console.log('⚠️ Nenhum marco encontrado, mantendo conteúdo estático');
             return;
@@ -28,6 +34,23 @@ async function renderizarTimeline() {
             const status = (marco.status || '').toLowerCase().trim();
             return status === 'ativo' || status === 'concluido';
         });
+        
+        // 🔍 DEBUG: Mostrar resultado do filtro
+        console.group('🔍 DEBUG - Filtro de Status');
+        console.log('Marcos após filtro (apenas "ativo" ou "concluido"):', marcosAtivos.length);
+        console.table(marcosAtivos);
+        
+        // Mostrar quais foram filtrados FORA
+        const marcosOcultos = timelineData.filter(marco => {
+            const status = (marco.status || '').toLowerCase().trim();
+            return status !== 'ativo' && status !== 'concluido';
+        });
+        
+        if (marcosOcultos.length > 0) {
+            console.log('⚠️ Marcos NÃO exibidos (status diferente de "ativo" ou "concluido"):');
+            console.table(marcosOcultos);
+        }
+        console.groupEnd();
         
         if (marcosAtivos.length === 0) {
             console.log('⚠️ Nenhum marco ativo/concluído encontrado');
@@ -69,8 +92,13 @@ async function renderizarTimeline() {
 }
 
 function criarCardTimeline(marco, index) {
-    const card = document.createElement('div');
+    // ✅ CRIAR LINK CLICÁVEL em vez de div simples
+    const card = document.createElement('a');
     card.className = 'timeline-item';
+    card.href = `ceni-marco-detalhe.html?id=${encodeURIComponent(marco.id || marco.periodo)}`;
+    card.style.textDecoration = 'none';
+    card.style.color = 'inherit';
+    card.setAttribute('aria-label', `Ver detalhes: ${marco.periodo}`);
     
     // Status badge (opcional)
     let statusBadge = '';
@@ -88,14 +116,22 @@ function criarCardTimeline(marco, index) {
         html += `<div style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem; opacity: 0.9;">${marco.titulo}</div>`;
     }
     
-    // Adicionar lista de itens
+    // Adicionar lista de itens (prévia - primeiros 3)
     if (marco.itens && marco.itens.length > 0) {
         html += '<ul>';
-        marco.itens.forEach(item => {
+        const previewItems = marco.itens.slice(0, 3);
+        previewItems.forEach(item => {
             html += `<li>${item}</li>`;
         });
+        // Mostrar indicador se houver mais itens
+        if (marco.itens.length > 3) {
+            html += `<li style="opacity: 0.6; font-style: italic;">+ ${marco.itens.length - 3} atividades...</li>`;
+        }
         html += '</ul>';
     }
+    
+    // Adicionar indicador visual de "clicável"
+    html += '<div style="margin-top: 1.5rem; font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary);">Ver Detalhes →</div>';
     
     card.innerHTML = html;
     
