@@ -38,7 +38,8 @@ class TimelineCarousel {
     }
     
     getItemsPerView() {
-        return window.innerWidth <= 968 ? 1 : 2;
+        // Sempre mostrar 1 card por vez para melhor foco
+        return 1;
     }
     
     createControls() {
