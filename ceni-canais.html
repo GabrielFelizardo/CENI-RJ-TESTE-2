@@ -499,16 +499,17 @@
                                     Para solicitar acesso, entre em contato através do email oficial
                                 </div>
                             </div>
-                        </li>             
-                        <!--ENDEREÇO-->
+                        </li>
+                        
+                        <!-- ENDEREÇO -->
                         <li class="canal-card">
                             <div class="canal-icon-box">
                                 <i class="fas fa-map-marker-alt canal-icon"></i>
                                 <span class="canal-number">04</span>
                             </div>
                             <div class="canal-content">
-                                <h3>Sede</h3>
-                                <p>Visite nossa sede no Palácio Guanabara</p>
+                                <h3>Sede - Palácio Guanabara</h3>
+                                <p>Visite nossa sede na SEDEICS</p>
                                 <div class="canal-info">
                                     Rua Pinheiro Machado s/nº, 3º andar<br>
                                     Laranjeiras, Rio de Janeiro - RJ<br>
@@ -634,29 +635,30 @@
                 </div>
                 
                 <div class="footer-section-enhanced gt-accent-2">
-                    
-               <div class="footer-section-enhanced gt-accent-2">
-            <h4>Contato</h4>
-            <div class="footer-section-content">
-                <a href="mailto:nucleo.acompanhamento@desenvolvimento.rj.gov.br" class="footer-contact-link">
-                    <i class="fas fa-envelope"></i>
-                    <span>nucleo.acompanhamento@desenvolvimento.rj.gov.br</span>
-                </a>
-                <a href="mailto:gabinete@desenvolvimento.rj.gov.br" class="footer-contact-link">
-                    <i class="fas fa-envelope"></i>
-                    <span>gabinete@desenvolvimento.rj.gov.br</span>
-                </a>
-                <a href="tel:+552133987000">
-                    <i class="fas fa-phone"></i>
-                    <span>(21) 3398-7000</span>
-                </a>
-                <div style="margin-top: 1rem; color: rgba(255,255,255,0.75); font-size: 0.875rem;">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span style="margin-left: 0.75rem;">Palácio Guanabara - Laranjeiras, Rio de Janeiro - RJ</span>
+                    <h4>Contato</h4>
+                    <div class="footer-section-content">
+                        <a href="mailto:nucleo.acompanhamento@desenvolvimento.rj.gov.br" class="footer-contact-link">
+                            <i class="fas fa-envelope"></i>
+                            <span>nucleo.acompanhamento@desenvolvimento.rj.gov.br</span>
+                        </a>
+                        <a href="mailto:gabinete@desenvolvimento.rj.gov.br" class="footer-contact-link">
+                            <i class="fas fa-envelope"></i>
+                            <span>gabinete@desenvolvimento.rj.gov.br</span>
+                        </a>
+                        <a href="tel:+552133987000">
+                            <i class="fas fa-phone"></i>
+                            <span>(21) 3398-7000</span>
+                        </a>
+                        <div style="margin-top: 1rem; color: rgba(255,255,255,0.75); font-size: 0.875rem;">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span style="margin-left: 0.75rem;">Rua Pinheiro Machado s/nº, 3º andar - Laranjeiras, Rio de Janeiro - RJ | CEP 20071-004</span>
+                        </div>
+                    </div>
                 </div>
+                
             </div>
-        </div>
-                <div class="footer-bottom-enhanced" style="grid-column: 1 / -1;">
+            
+            <div class="footer-bottom-enhanced" style="grid-column: 1 / -1;">
                 <p>© <span id="current-year"></span> CENI-RJ - Comitê Estadual de Investimentos e Negócios de Impacto</p>
                 <p>SEDEICS - Secretaria de Desenvolvimento Econômico, Indústria, Comércio e Serviços</p>
                 <p>Desenvolvido por Gabriel Felizardo da Silva</p>
@@ -677,7 +679,7 @@
 
         window.addEventListener('scroll', () => {
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientElement;
             document.getElementById('progressBar').style.width = ((winScroll / height) * 100) + '%';
         });
 
