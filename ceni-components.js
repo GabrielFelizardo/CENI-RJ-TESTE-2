@@ -10,6 +10,10 @@
 // ============================================
 class CeniHeader extends HTMLElement {
     connectedCallback() {
+        // CORREÇÃO: display: contents faz o elemento wrapper "sumir" para o layout,
+        // permitindo que o position: sticky do .gov-header funcione corretamente.
+        this.style.display = 'contents';
+
         this.innerHTML = `
             <header class="gov-header">
                 <div class="header-grid">
@@ -46,7 +50,9 @@ class CeniHeader extends HTMLElement {
         // Sticky Header Logic
         const header = this.querySelector('.gov-header');
         window.addEventListener('scroll', () => {
-            header.classList.toggle('scrolled', window.scrollY > 100);
+            if (header) {
+                header.classList.toggle('scrolled', window.scrollY > 100);
+            }
         });
 
         // Mobile Menu Logic
@@ -69,19 +75,26 @@ class CeniHeader extends HTMLElement {
             menuToggle.innerHTML = isOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
         };
 
-        menuToggle.addEventListener('click', toggleMenu);
-        mobileOverlay.addEventListener('click', () => {
-            if (mainNav.classList.contains('active')) toggleMenu();
-        });
+        if (menuToggle) {
+            menuToggle.addEventListener('click', toggleMenu);
+        }
+        
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', () => {
+                if (mainNav && mainNav.classList.contains('active')) toggleMenu();
+            });
+        }
     }
 
     highlightActiveLink() {
+        // Fallback seguro se pathname for vazio ou raiz
         const currentPath = window.location.pathname.split('/').pop() || 'ceni-index.html';
         const links = this.querySelectorAll('.main-nav a');
         
         links.forEach(link => {
             const linkHref = link.getAttribute('href');
-            if (currentPath === linkHref) {
+            // Verifica correspondência exata ou se é a home
+            if (currentPath === linkHref || (currentPath === '' && linkHref === 'ceni-index.html')) {
                 link.classList.add('active');
                 link.setAttribute('aria-current', 'page');
             } else {
@@ -97,6 +110,8 @@ class CeniHeader extends HTMLElement {
 // ============================================
 class CeniFooter extends HTMLElement {
     connectedCallback() {
+        this.style.display = 'block'; // Boa prática para custom elements
+
         this.innerHTML = `
             <footer class="page-footer-enhanced" data-animate>
                 <div class="swiss-grid">
