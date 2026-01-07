@@ -10,8 +10,9 @@
 // ============================================
 class CeniHeader extends HTMLElement {
     connectedCallback() {
-        // CORREÇÃO: display: contents faz o elemento wrapper "sumir" para o layout,
-        // permitindo que o position: sticky do .gov-header funcione corretamente.
+        // 🔥 CORREÇÃO IMPORTANTE: 
+        // 'display: contents' remove a tag <ceni-header> do cálculo de layout,
+        // permitindo que o 'position: sticky' do CSS funcione corretamente em relação ao body.
         this.style.display = 'contents';
 
         this.innerHTML = `
@@ -47,19 +48,20 @@ class CeniHeader extends HTMLElement {
     }
 
     initScripts() {
-        // Sticky Header Logic
+        // Lógica do Sticky Header (encolher ao rolar)
         const header = this.querySelector('.gov-header');
+        
+        // Aplica a classe imediatamente caso a página já carregue rolada
+        if (window.scrollY > 100) header.classList.add('scrolled');
+
         window.addEventListener('scroll', () => {
-            if (header) {
-                header.classList.toggle('scrolled', window.scrollY > 100);
-            }
+            header.classList.toggle('scrolled', window.scrollY > 100);
         });
 
-        // Mobile Menu Logic
+        // Lógica do Menu Mobile
         const menuToggle = this.querySelector('#menuToggle');
         const mainNav = this.querySelector('#mainNav');
         
-        // Procura ou cria o overlay
         let mobileOverlay = document.getElementById('mobileOverlay');
         if (!mobileOverlay) {
             mobileOverlay = document.createElement('div');
@@ -75,26 +77,23 @@ class CeniHeader extends HTMLElement {
             menuToggle.innerHTML = isOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
         };
 
-        if (menuToggle) {
-            menuToggle.addEventListener('click', toggleMenu);
-        }
-        
-        if (mobileOverlay) {
-            mobileOverlay.addEventListener('click', () => {
-                if (mainNav && mainNav.classList.contains('active')) toggleMenu();
-            });
-        }
+        menuToggle.addEventListener('click', toggleMenu);
+        mobileOverlay.addEventListener('click', () => {
+            if (mainNav.classList.contains('active')) toggleMenu();
+        });
     }
 
     highlightActiveLink() {
-        // Fallback seguro se pathname for vazio ou raiz
-        const currentPath = window.location.pathname.split('/').pop() || 'ceni-index.html';
+        // Pega o nome do arquivo atual (ex: ceni-sobre.html)
+        const path = window.location.pathname;
+        const page = path.split("/").pop() || 'ceni-index.html';
+
         const links = this.querySelectorAll('.main-nav a');
         
         links.forEach(link => {
-            const linkHref = link.getAttribute('href');
-            // Verifica correspondência exata ou se é a home
-            if (currentPath === linkHref || (currentPath === '' && linkHref === 'ceni-index.html')) {
+            const href = link.getAttribute('href');
+            // Verifica se o href corresponde à página atual
+            if (href === page) {
                 link.classList.add('active');
                 link.setAttribute('aria-current', 'page');
             } else {
@@ -110,7 +109,8 @@ class CeniHeader extends HTMLElement {
 // ============================================
 class CeniFooter extends HTMLElement {
     connectedCallback() {
-        this.style.display = 'block'; // Boa prática para custom elements
+        // Opcional para o footer, mas boa prática para manter consistência de layout
+        this.style.display = 'contents';
 
         this.innerHTML = `
             <footer class="page-footer-enhanced" data-animate>
@@ -169,7 +169,7 @@ class CeniFooter extends HTMLElement {
             </footer>
         `;
         
-        // Se existir o script de footer enhanced, tenta reinicializar
+        // Re-inicializa funcionalidades do footer (ex: accordion mobile)
         if (window.CENIFooter && window.CENIFooter.refresh) {
             window.CENIFooter.refresh();
         }
