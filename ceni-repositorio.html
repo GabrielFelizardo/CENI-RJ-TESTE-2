@@ -388,7 +388,7 @@
             </div>
         </section>
 
-        <section style="margin-bottom: 4rem;">
+        <section style="margin-bottom: 6rem;">
             <div class="swiss-grid">
                 <div class="col-full">
                     <div class="info-box" data-animate="scale-in">
@@ -400,31 +400,19 @@
             </div>
         </section>
 
-        <section style="margin-bottom: 2rem;">
+        <!-- CONTAINER DINÂMICO DE DOCUMENTOS -->
+        <section style="margin-bottom: 6rem;">
             <div class="swiss-grid">
                 <div class="col-full">
-                    <div class="search-wrapper">
-                        <label for="doc-search" class="visually-hidden">Pesquisar documentos</label>
-                        <input type="text" 
-                               id="doc-search" 
-                               class="swiss-input" 
-                               placeholder="FILTRAR POR TÍTULO, DATA OU PALAVRA-CHAVE..."
-                               autocomplete="off">
-                        <i class="fas fa-search search-icon-fixed"></i>
+                    <!-- Container dinâmico - será preenchido via JavaScript -->
+                    <div id="documentos-container">
+                        <!-- Documentos serão inseridos aqui via ceni-api-client.js -->
                     </div>
                 </div>
             </div>
         </section>
 
-        <section style="margin-bottom: 6rem;">
-            <div class="swiss-grid">
-                <div class="col-full">
-                    <div id="documentos-container">
-                        </div>
-                </div>
-            </div>
-        </section>
-
+        <!-- Edital FAPERJ -->
         <section class="full-width-section full-width-bg">
             <div class="swiss-grid">
                 <div class="col-full">
@@ -528,6 +516,7 @@
         </div>
     </footer>
 
+    <!-- Scripts do Sistema Dinâmico -->
     <script src="ceni-api-client.js"></script>
     <script src="ceni-utils.js"></script>
     <script src="ceni-animations.js"></script>
