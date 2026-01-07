@@ -8,7 +8,7 @@ const CENI_API = {
   
   // Versão atual dos dados/estrutura. 
   // ⚠️ MUDE ISTO (ex: '1.1') PARA FORÇAR LIMPEZA DE CACHE EM TODOS OS USUÁRIOS
-  VERSION: '1.0',
+  VERSION: '1.1',
 
   // Cache local (5 minutos)
   CACHE_DURATION: 5 * 60 * 1000,
