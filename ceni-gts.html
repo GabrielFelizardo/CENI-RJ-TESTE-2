@@ -107,21 +107,8 @@
         .col-8 { grid-column: span 8; position: relative; z-index: 1; }
 
         @media (max-width: 968px) {
-            
             .main-nav.active { right: 0; }
-
-            .mobile-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: transparent;
-                z-index: 10000;
-                transition: opacity 0.3s ease;
-            }
-            .mobile-overlay.active { display: block; }
+            .mobile-overlay { display: none; }
         }
         
         .section-number {
@@ -337,49 +324,6 @@
             transform: translateY(-4px);
         }
         
-        .page-footer {
-            background: var(--accent);
-            color: white;
-            padding: 4rem 0 2rem 0;
-            margin-top: 8rem;
-            border-top: 4px solid var(--primary);
-        }
-        
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 3rem;
-            margin-bottom: 3rem;
-        }
-        
-        .footer-section h4 {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            opacity: 0.6;
-        }
-        
-        .footer-section a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            margin-bottom: 0.75rem;
-            font-size: 0.875rem;
-        }
-        
-        .footer-section a:hover { text-decoration: underline; }
-        
-        .footer-bottom {
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 2rem;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            opacity: 0.6;
-        }
-        
         @media (max-width: 968px) {
             .swiss-grid { 
                 padding: 0 2rem; 
@@ -391,45 +335,18 @@
             .section-title { font-size: 2rem; }
             .section-number { font-size: 6rem; }
             .gt-number-large { font-size: 5rem; }
-            .footer-grid { grid-template-columns: 1fr; }
-            
         }
     </style>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
     <div class="progress-indicator" id="progressBar"></div>
-    <div class="mobile-overlay" id="mobileOverlay"></div>
 
-    <header class="gov-header">
-        <div class="header-grid">
-            <div class="header-brand">
-                <img src="https://raw.githubusercontent.com/GabrielFelizardo/almoxarifado-sistema/main/logo.png" alt="SEDEICS" class="gov-logo-img" loading="lazy">
-                
-                <div class="header-ceni-mark">
-                    <div class="header-ceni-title">CENI-RJ</div>
-                    <div class="header-ceni-subtitle">Comitê Estadual de Impacto</div>
-                </div>
-            </div>
-            
-            <button class="mobile-menu-toggle" id="menuToggle" aria-label="Abrir menu de navegação" aria-expanded="false">
-                <i class="fas fa-bars"></i>
-            </button>
-
-           <nav class="main-nav" id="mainNav" role="navigation" aria-label="Navegação principal">
-                <a href="ceni-index.html">Início</a>
-                <a href="ceni-sobre.html">Sobre</a>
-                <a href="ceni-gts.html" class="active" aria-current="page">GTs</a>
-                <a href="ceni-eventos.html">Eventos</a>
-                <a href="ceni-canais.html">Canais</a>
-                <a href="ceni-repositorio.html">Repositório</a>
-            </nav>
-        </div>
-    </header>
+    <ceni-header></ceni-header>
 
     <nav class="breadcrumb-container" aria-label="Breadcrumb">
         <ol class="breadcrumb">
-            <li><a href="index.html">CENI-RJ</a></li>
+            <li><a href="ceni-index.html">CENI-RJ</a></li>
             <li class="active" aria-current="page">→ Grupos de Trabalho</li>
         </ol>
     </nav>
@@ -482,7 +399,6 @@
             </div>
         </section>
 
-        <!-- GT 1 -->
         <section class="gt-section gt1" id="gt1">
             <div class="swiss-grid">
                 <div class="col-full" style="position: relative;">
@@ -496,7 +412,6 @@
             </div>
         </section>
 
-        <!-- GT 2 -->
         <section class="gt-section gt2" id="gt2">
             <div class="swiss-grid">
                 <div class="col-full" style="position: relative;">
@@ -510,7 +425,6 @@
             </div>
         </section>
 
-        <!-- GT 3 -->
         <section class="gt-section gt3" id="gt3">
             <div class="swiss-grid">
                 <div class="col-full" style="position: relative;">
@@ -524,7 +438,6 @@
             </div>
         </section>
 
-        <!-- GT 4 -->
         <section class="gt-section gt4" id="gt4">
             <div class="swiss-grid">
                 <div class="col-full" style="position: relative;">
@@ -538,7 +451,6 @@
             </div>
         </section>
 
-        <!-- GT 5 -->
         <section class="gt-section gt5" id="gt5">
             <div class="swiss-grid">
                 <div class="col-full" style="position: relative;">
@@ -552,7 +464,6 @@
             </div>
         </section>
 
-        <!-- MEMBROS DO COMITÊ -->
         <section style="margin-top: 8rem; margin-bottom: 6rem;">
             <div class="swiss-grid">
                 <div class="col-full" style="position: relative;">
@@ -571,7 +482,6 @@
                 </div>
                 
                 <div style="grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-                    <!-- GOVERNO -->
                     <div class="org-item">
                         <i class="fas fa-landmark org-icon"></i>
                         <h4>Casa Civil - SECC</h4>
@@ -668,7 +578,6 @@
                         </div>
                     </div>
                     
-                    <!-- SOCIEDADE CIVIL -->
                     <div class="org-item">
                         <i class="fas fa-chart-line org-icon"></i>
                         <h4>SEBRAE-RJ</h4>
@@ -785,114 +694,21 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <footer class="page-footer-enhanced" data-animate>
-        <div class="swiss-grid">
-            <div class="footer-grid-enhanced" style="grid-column: 1 / -1;">
-                
-                <div class="footer-brand">
-                    <div class="footer-logo-text">CENI-RJ</div>
-                    <p class="footer-tagline">
-                        Comitê Estadual de Investimentos e Negócios de Impacto do Rio de Janeiro
-                    </p>
-                </div>
-                
-                <div class="footer-section-enhanced gt-accent-1">
-                    <h4>Navegação</h4>
-                    <div class="footer-section-content">
-                        <a href="ceni-index.html">
-                            <i class="fas fa-home"></i>
-                            <span>Início</span>
-                        </a>
-                        <a href="ceni-sobre.html">
-                            <i class="fas fa-info-circle"></i>
-                            <span>Sobre o Comitê</span>
-                        </a>
-                        <a href="ceni-gts.html">
-                            <i class="fas fa-users"></i>
-                            <span>Grupos de Trabalho</span>
-                        </a>
-                        <a href="ceni-eventos.html">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Eventos</span>
-                        </a>
-                        <a href="ceni-canais.html">
-                            <i class="fas fa-comments"></i>
-                            <span>Canais</span>
-                        </a>
-                        <a href="ceni-repositorio.html">
-                            <i class="fas fa-folder-open"></i>
-                            <span>Repositório</span>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="footer-section-enhanced gt-accent-2">
-                   <h4>Contato</h4>
-                    <div class="footer-section-content">
-                        <a href="mailto:nucleo.acompanhamento@desenvolvimento.rj.gov.br" class="footer-contact-link">
-                            <i class="fas fa-envelope"></i>
-                            <span>nucleo.acompanhamento@desenvolvimento.rj.gov.br</span>
-                        </a>
-                        <a href="mailto:gabinete@desenvolvimento.rj.gov.br" class="footer-contact-link">
-                            <i class="fas fa-envelope"></i>
-                            <span>gabinete@desenvolvimento.rj.gov.br</span>
-                        </a>
-                        <a href="tel:+552133987000">
-                            <i class="fas fa-phone"></i>
-                            <span>(21) 3398-7000</span>
-                        </a>
-                        <div style="margin-top: 1rem; color: rgba(255,255,255,0.75); font-size: 0.875rem;">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span style="margin-left: 0.75rem;">Palácio Guanabara - Laranjeiras, Rio de Janeiro - RJ</span>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-            
-            <div class="footer-bottom-enhanced" style="grid-column: 1 / -1;">
-                <p>© <span id="current-year"></span> CENI-RJ - Comitê Estadual de Investimentos e Negócios de Impacto</p>
-                <p>SEDEICS - Secretaria de Desenvolvimento Econômico, Indústria, Comércio e Serviços</p>
-                <p>Desenvolvido por Gabriel Felizardo da Silva</p>
-            </div>
-        </div>
-    </footer>
+    <ceni-footer></ceni-footer>
 
     <script src="ceni-animations.js"></script>
     <script src="ceni-footer-enhanced.js"></script>
+    <script src="ceni-components.js"></script>
 
     <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-        
-        const header = document.querySelector('.gov-header');
-        window.addEventListener('scroll', () => {
-            header.classList.toggle('scrolled', window.scrollY > 100);
-        });
-
+        // Progress bar
         window.addEventListener('scroll', () => {
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             document.getElementById('progressBar').style.width = ((winScroll / height) * 100) + '%';
         });
 
-        const menuToggle = document.getElementById('menuToggle');
-        const mainNav = document.getElementById('mainNav');
-        const mobileOverlay = document.getElementById('mobileOverlay');
-
-        menuToggle.addEventListener('click', () => {
-            const isOpen = mainNav.classList.toggle('active');
-            mobileOverlay.classList.toggle('active');
-            menuToggle.setAttribute('aria-expanded', isOpen);
-            menuToggle.innerHTML = isOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-        });
-
-        mobileOverlay.addEventListener('click', () => {
-            mainNav.classList.remove('active');
-            mobileOverlay.classList.remove('active');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-        });
-
+        // Back to top
         const backToTop = document.getElementById('backToTop');
         window.addEventListener('scroll', () => {
             backToTop.classList.toggle('visible', window.scrollY > 300);
