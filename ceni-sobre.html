@@ -190,10 +190,7 @@
         .marco-number { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--primary); }
         .marco-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-top: 1rem; }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin: 4rem 0; }
-        .stat-item { border-left: 4px solid var(--primary); padding-left: 2rem; }
-        .stat-number { font-size: 4rem; font-weight: 900; line-height: 1; color: var(--primary); }
-        .stat-label { font-size: 0.875rem; text-transform: uppercase; font-weight: 700; margin-top: 0.5rem; }
+        /* Stats grid removido daqui */
         
         .objetivos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin: 3rem 0; }
         .objetivo-item { border-left: 4px solid var(--primary); padding: 2rem; }
@@ -230,7 +227,7 @@
             .breadcrumb { padding: 0 2rem; }
             .col-8, .col-6 { grid-column: 1 / -1; }
             .hero-title { font-size: 2.5rem; }
-            .marcos-grid, .stats-grid, .objetivos-grid, 
+            .marcos-grid, .objetivos-grid, 
             .marcos-legais-grid, .recursos-grid, .exemplo-grid { grid-template-columns: 1fr; }
             .tabs-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; }
             .tab-button { padding: 1.25rem 1.5rem; font-size: 0.75rem; }
@@ -241,11 +238,12 @@
 <body>
     <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
     <div class="progress-indicator" id="progressBar"></div>
+    
     <ceni-header></ceni-header>
 
     <nav class="breadcrumb-container" aria-label="Breadcrumb">
         <ol class="breadcrumb">
-            <li><a href="index.html">CENI-RJ</a></li>
+            <li><a href="ceni-index.html">CENI-RJ</a></li>
             <li class="active" aria-current="page">→ Sobre</li>
         </ol>
     </nav>
@@ -263,7 +261,7 @@
                 
                 <div class="col-8">
                     <p style="font-size: 1.25rem; line-height: 1.6;">
-                        O <strong>Comitê Estadual de Investimentos e Negócios de Impacto</strong> é uma 
+                        O <strong>Comitê Estadual de Investimentos e Negócios de Impacto – CENI-RJ</strong> é uma 
                         instância estratégica do Governo do Estado do Rio de Janeiro responsável por promover a 
                         articulação entre governo, instituições de fomento, sociedade civil, universidades, 
                         organizações intermediárias e setor privado.
@@ -496,30 +494,7 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <div class="stat-number">17</div>
-                                <div class="stat-label">
-                                    Organizações Participantes
-                                </div>
-                            </div>
-                            
-                            <div class="stat-item">
-                                <div class="stat-number">5</div>
-                                <div class="stat-label">
-                                    Grupos de Trabalho
-                                </div>
-                            </div>
-                            
-                            <div class="stat-item">
-                                <div class="stat-number">34</div>
-                                <div class="stat-label">
-                                    Membros (Titular + Suplente)
-                                </div>
-                            </div>
                         </div>
-                    </div>
 
                     <div class="tab-content" role="tabpanel" id="tab-objetivos" aria-labelledby="btn-objetivos">
                         <div class="objetivos-grid">
