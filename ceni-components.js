@@ -3,7 +3,6 @@
  * CENI-RJ - Web Components
  * ============================================
  * Componentes reutilizáveis para Header e Footer
- * VERSÃO CORRIGIDA - Menu mobile com overlay funcional
  */
 
 // ============================================
@@ -59,78 +58,29 @@ class CeniHeader extends HTMLElement {
             header.classList.toggle('scrolled', window.scrollY > 100);
         });
 
-        // ============================================
-        // Lógica do Menu Mobile - VERSÃO CORRIGIDA
-        // ============================================
+        // Lógica do Menu Mobile
         const menuToggle = this.querySelector('#menuToggle');
         const mainNav = this.querySelector('#mainNav');
         
-        // Criar ou buscar overlay
         let mobileOverlay = document.getElementById('mobileOverlay');
         if (!mobileOverlay) {
             mobileOverlay = document.createElement('div');
             mobileOverlay.id = 'mobileOverlay';
             mobileOverlay.className = 'mobile-overlay';
             document.body.appendChild(mobileOverlay);
-            
-            console.log('✅ Mobile overlay criado');
         }
 
         const toggleMenu = () => {
             const isOpen = mainNav.classList.toggle('active');
             mobileOverlay.classList.toggle('active');
-            document.body.classList.toggle('menu-open', isOpen); // Prevenir scroll do body
             menuToggle.setAttribute('aria-expanded', isOpen);
-            menuToggle.setAttribute('aria-label', isOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação');
-            
-            // Trocar ícone
             menuToggle.innerHTML = isOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-            
-            console.log(`Menu ${isOpen ? 'aberto' : 'fechado'}`);
         };
 
-        const closeMenu = () => {
-            if (mainNav.classList.contains('active')) {
-                mainNav.classList.remove('active');
-                mobileOverlay.classList.remove('active');
-                document.body.classList.remove('menu-open');
-                menuToggle.setAttribute('aria-expanded', 'false');
-                menuToggle.setAttribute('aria-label', 'Abrir menu de navegação');
-                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-                
-                console.log('Menu fechado');
-            }
-        };
-
-        // Toggle ao clicar no botão
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevenir propagação
-            toggleMenu();
+        menuToggle.addEventListener('click', toggleMenu);
+        mobileOverlay.addEventListener('click', () => {
+            if (mainNav.classList.contains('active')) toggleMenu();
         });
-        
-        // Fechar ao clicar no overlay (background escuro)
-        mobileOverlay.addEventListener('click', (e) => {
-            e.stopPropagation();
-            closeMenu();
-        });
-        
-        // Fechar ao clicar em qualquer link do menu
-        const navLinks = mainNav.querySelectorAll('a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                // Pequeno delay para permitir navegação antes de fechar
-                setTimeout(closeMenu, 100);
-            });
-        });
-        
-        // Fechar com tecla ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeMenu();
-            }
-        });
-        
-        console.log('✅ Menu mobile inicializado com overlay funcional');
     }
 
     highlightActiveLink() {
@@ -226,10 +176,6 @@ class CeniFooter extends HTMLElement {
     }
 }
 
-// ============================================
-// REGISTRAR OS COMPONENTES
-// ============================================
+// Registrar os componentes
 customElements.define('ceni-header', CeniHeader);
 customElements.define('ceni-footer', CeniFooter);
-
-console.log('✅ Web Components carregados (versão mobile corrigida)');
