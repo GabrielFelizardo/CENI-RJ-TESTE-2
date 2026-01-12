@@ -33,13 +33,12 @@ async function renderizarGTsMembros() {
             // Criar accordion
             const accordionHTML = criarAccordionGT(gt);
             
-            // Inserir no final da seção (depois do gt-header)
-            const swissGrid = gtSection.querySelector('.swiss-grid');
-            if (swissGrid) {
-                const accordionContainer = document.createElement('div');
-                accordionContainer.className = 'col-full';
-                accordionContainer.innerHTML = accordionHTML;
-                swissGrid.appendChild(accordionContainer);
+            // Inserir DENTRO do gt-header
+            const gtHeader = gtSection.querySelector('.gt-header');
+            if (gtHeader) {
+                const accordionDiv = document.createElement('div');
+                accordionDiv.innerHTML = accordionHTML;
+                gtHeader.appendChild(accordionDiv.firstChild);
             }
         });
         
