@@ -1,0 +1,285 @@
+/**
+ * ============================================
+ * ACCORDION DE MEMBROS DOS GTS
+ * ============================================
+ * Estilos para mostrar/ocultar membros
+ */
+
+/* Container do accordion */
+.gt-membros-accordion {
+    margin-top: 3rem;
+    border: 2px solid var(--accent, #000);
+    background: white;
+}
+
+/* Botão toggle */
+.accordion-toggle {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 2rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+}
+
+.accordion-toggle:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.accordion-toggle:focus-visible {
+    outline: 3px solid var(--primary, #1e3a8a);
+    outline-offset: -3px;
+}
+
+/* Ícone do accordion */
+.accordion-icon {
+    font-size: 1.25rem;
+    color: var(--primary, #1e3a8a);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gt-membros-accordion.expanded .accordion-icon {
+    transform: rotate(180deg);
+}
+
+/* Conteúdo do accordion */
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-top: 0px solid var(--grid-line, #e0e0e0);
+}
+
+.gt-membros-accordion.expanded .accordion-content {
+    border-top-width: 1px;
+}
+
+/* Grid de membros */
+.membros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 2.5rem;
+}
+
+/* Card de membro */
+.membro-card {
+    border: 2px solid var(--accent, #000);
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.membro-card:hover {
+    background: var(--accent, #000);
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Organização (destaque) */
+.membro-organizacao {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--grid-line, #e0e0e0);
+    transition: border-color 0.3s;
+}
+
+.membro-card:hover .membro-organizacao {
+    border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.membro-organizacao i {
+    font-size: 1.25rem;
+    color: var(--primary, #1e3a8a);
+    transition: color 0.3s;
+}
+
+.membro-card:hover .membro-organizacao i {
+    color: white;
+}
+
+/* Tipo de organização */
+.membro-tipo {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary, #666);
+    margin-bottom: 1rem;
+    font-weight: 700;
+    transition: color 0.3s;
+}
+
+.membro-card:hover .membro-tipo {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Representantes */
+.membro-representante {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+}
+
+.membro-representante:last-child {
+    margin-bottom: 0;
+}
+
+.representante-label {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+    color: var(--text-secondary, #666);
+    transition: color 0.3s;
+}
+
+.membro-card:hover .representante-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.representante-nome {
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+/* Placeholder (GT desativado) */
+.membros-placeholder {
+    padding: 4rem 2.5rem;
+    text-align: center;
+    color: var(--text-secondary, #666);
+}
+
+.membros-placeholder i {
+    font-size: 3rem;
+    color: var(--primary, #1e3a8a);
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.membros-placeholder p {
+    margin: 0.5rem 0;
+}
+
+.membros-placeholder p:first-of-type {
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-primary, #000);
+    margin-top: 0;
+}
+
+.membros-placeholder p:last-of-type {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 968px) {
+    .accordion-toggle {
+        padding: 1.5rem 2rem;
+        font-size: 1rem;
+    }
+    
+    .accordion-icon {
+        font-size: 1.125rem;
+    }
+    
+    .membros-grid {
+        grid-template-columns: 1fr;
+        padding: 2rem;
+        gap: 1.25rem;
+    }
+    
+    .membro-card {
+        padding: 1.25rem;
+    }
+    
+    .membros-placeholder {
+        padding: 3rem 2rem;
+    }
+    
+    .membros-placeholder i {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .accordion-toggle {
+        padding: 1.25rem 1.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .membros-grid {
+        padding: 1.5rem;
+    }
+    
+    .membro-card {
+        padding: 1rem;
+    }
+    
+    .membro-organizacao {
+        font-size: 0.9rem;
+    }
+}
+
+/* ========================================
+   ACESSIBILIDADE
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .accordion-toggle,
+    .accordion-icon,
+    .accordion-content,
+    .membro-card {
+        transition: none !important;
+    }
+}
+
+/* ========================================
+   PRINT
+   ======================================== */
+
+@media print {
+    .gt-membros-accordion {
+        border: 1px solid #000;
+    }
+    
+    .accordion-toggle {
+        display: none;
+    }
+    
+    .accordion-content {
+        max-height: none !important;
+        overflow: visible !important;
+        border-top: 1px solid #000;
+    }
+    
+    .membros-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .membro-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
