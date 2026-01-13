@@ -10,15 +10,49 @@ async function renderizarGTsMembros() {
     try {
         console.log('📋 Carregando membros dos GTs...');
         
+        // ✨ ADICIONAR LOADING EM TODOS OS GT-HEADERS
+        const gtHeaders = document.querySelectorAll('.gt-header');
+        gtHeaders.forEach(header => {
+            const loadingHTML = `
+                <div class="gt-loading" style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 20px;
+                    margin-top: 15px;
+                    background: rgba(255, 255, 255, 0.05);
+                    border-radius: 8px;
+                    color: rgba(255, 255, 255, 0.7);
+                    font-size: 14px;
+                ">
+                    <div class="spinner" style="
+                        width: 20px;
+                        height: 20px;
+                        border: 3px solid rgba(255, 255, 255, 0.1);
+                        border-top-color: #fff;
+                        border-radius: 50%;
+                        animation: spin 0.8s linear infinite;
+                    "></div>
+                    <span>Carregando membros participantes...</span>
+                </div>
+            `;
+            header.insertAdjacentHTML('beforeend', loadingHTML);
+        });
+        
         // Verificar se função fetchCENIData existe
         if (typeof fetchCENIData !== 'function') {
             console.error('❌ fetchCENIData não está disponível! Verifique se ceni-api-client.js foi carregado.');
+            // Remover loadings
+            document.querySelectorAll('.gt-loading').forEach(el => el.remove());
             return;
         }
         
         // Buscar dados da API
         const data = await fetchCENIData('gts');
         console.log('📊 Dados recebidos da API:', data);
+        
+        // ✨ REMOVER LOADINGS
+        document.querySelectorAll('.gt-loading').forEach(el => el.remove());
         
         const gtsData = data.gts || [];
         
@@ -62,6 +96,8 @@ async function renderizarGTsMembros() {
         
     } catch (error) {
         console.error('❌ Erro ao renderizar GTs:', error);
+        // Remover loadings em caso de erro
+        document.querySelectorAll('.gt-loading').forEach(el => el.remove());
     }
 }
 
