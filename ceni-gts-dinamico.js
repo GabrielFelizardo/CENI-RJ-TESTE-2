@@ -10,8 +10,16 @@ async function renderizarGTsMembros() {
     try {
         console.log('📋 Carregando membros dos GTs...');
         
+        // Verificar se função fetchCENIData existe
+        if (typeof fetchCENIData !== 'function') {
+            console.error('❌ fetchCENIData não está disponível! Verifique se ceni-api-client.js foi carregado.');
+            return;
+        }
+        
         // Buscar dados da API
         const data = await fetchCENIData('gts');
+        console.log('📊 Dados recebidos da API:', data);
+        
         const gtsData = data.gts || [];
         
         if (!gtsData || gtsData.length === 0) {
@@ -19,7 +27,11 @@ async function renderizarGTsMembros() {
             return;
         }
         
-        console.log(`✅ ${gtsData.length} GTs carregados`);
+        console.log(`✅ ${gtsData.length} GTs carregados:`, gtsData);
+        
+        // Verificar quantas seções GT existem no HTML
+        const totalSecoes = document.querySelectorAll('.gt-section').length;
+        console.log(`🔍 Seções GT encontradas no HTML: ${totalSecoes}`);
         
         // Para cada GT (1 a 5), renderizar accordion
         gtsData.forEach(gt => {
@@ -33,12 +45,13 @@ async function renderizarGTsMembros() {
             // Criar accordion
             const accordionHTML = criarAccordionGT(gt);
             
-            // Inserir DENTRO do gt-header
+            // Inserir DENTRO do gt-header usando insertAdjacentHTML
             const gtHeader = gtSection.querySelector('.gt-header');
             if (gtHeader) {
-                const accordionDiv = document.createElement('div');
-                accordionDiv.innerHTML = accordionHTML;
-                gtHeader.appendChild(accordionDiv.firstChild);
+                gtHeader.insertAdjacentHTML('beforeend', accordionHTML);
+                console.log(`✅ Accordion inserido no GT ${gt.gt_numero}`);
+            } else {
+                console.warn(`⚠️ gt-header não encontrado para GT ${gt.gt_numero}`);
             }
         });
         
@@ -53,8 +66,12 @@ async function renderizarGTsMembros() {
 }
 
 function criarAccordionGT(gt) {
+    console.log(`🎨 Criando accordion para GT ${gt.gt_numero}:`, gt);
+    
     const isAtivo = gt.status === 'ativo';
     const temMembros = gt.membros && gt.membros.length > 0;
+    
+    console.log(`   Status: ${gt.status}, Ativo: ${isAtivo}, Tem membros: ${temMembros}`);
     
     let html = `
         <div class="gt-membros-accordion" data-gt="${gt.gt_numero}" data-animate="fade-up" data-delay="200">
@@ -113,6 +130,8 @@ function criarAccordionGT(gt) {
         </div>
     `;
     
+    console.log(`✅ HTML do accordion GT ${gt.gt_numero} criado (${html.length} caracteres)`);
+    
     return html;
 }
 
@@ -160,7 +179,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Aguardar um pouco para garantir que ceni-api-client.js foi carregado
     if (document.querySelector('.gt-section')) {
         console.log('🚀 Detectada página de GTs');
-        setTimeout(renderizarGTsMembros, 500);
+        
+        // Verificar se ceni-api-client.js foi carregado
+        if (typeof fetchCENIData === 'undefined') {
+            console.error('❌ ERRO: ceni-api-client.js não foi carregado ainda!');
+            console.log('⏳ Tentando novamente em 1 segundo...');
+            setTimeout(renderizarGTsMembros, 1000);
+        } else {
+            console.log('✅ ceni-api-client.js detectado, iniciando renderização...');
+            setTimeout(renderizarGTsMembros, 100);
+        }
+    } else {
+        console.log('ℹ️ Página não contém seções de GT, pulando renderização');
     }
 });
 
