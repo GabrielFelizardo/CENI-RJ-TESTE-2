@@ -1,9 +1,9 @@
 /**
  * ============================================
- * CENI-GTS-DINAMICO.JS
+ * CENI-GTS-DINAMICO V2 - COM OFFLINE SUPPORT
  * ============================================
- * Renderiza membros dos GTs dinamicamente
- * com accordion para mostrar/ocultar
+ * Busca dados offline primeiro (rápido)
+ * Se falhar, busca da API (backup)
  */
 
 async function renderizarGTsMembros() {
@@ -47,9 +47,27 @@ async function renderizarGTsMembros() {
             return;
         }
         
-        // Buscar dados da API
-        const data = await fetchCENIData('gts');
-        console.log('📊 Dados recebidos da API:', data);
+        // ✨ ESTRATÉGIA: Tentar OFFLINE primeiro, API como backup
+        let data;
+        let fonte = 'offline';
+        
+        try {
+            console.log('⚡ Tentando buscar dados OFFLINE...');
+            data = await fetchCENIData('membros-offline');
+            console.log('✅ Dados OFFLINE carregados!');
+        } catch (offlineError) {
+            console.warn('⚠️ Dados offline não disponíveis, tentando API...', offlineError);
+            try {
+                data = await fetchCENIData('gts');
+                fonte = 'api';
+                console.log('✅ Dados da API carregados!');
+            } catch (apiError) {
+                console.error('❌ Erro ao buscar da API também:', apiError);
+                throw new Error('Não foi possível carregar dados offline nem da API');
+            }
+        }
+        
+        console.log(`📊 Dados recebidos (fonte: ${fonte}):`, data);
         
         // ✨ REMOVER LOADINGS
         document.querySelectorAll('.gt-loading').forEach(el => el.remove());
@@ -61,7 +79,7 @@ async function renderizarGTsMembros() {
             return;
         }
         
-        console.log(`✅ ${gtsData.length} GTs carregados:`, gtsData);
+        console.log(`✅ ${gtsData.length} GTs carregados (${fonte}):`, gtsData);
         
         // Verificar quantas seções GT existem no HTML
         const totalSecoes = document.querySelectorAll('.gt-section').length;
@@ -92,12 +110,53 @@ async function renderizarGTsMembros() {
         // Inicializar funcionalidade dos accordions
         inicializarAccordions();
         
-        console.log('✅ Accordions dos GTs renderizados com sucesso');
+        console.log(`✅ Accordions dos GTs renderizados com sucesso (fonte: ${fonte})`);
+        
+        // ✨ MOSTRAR BADGE DE FONTE (OPCIONAL - APENAS PARA DEBUG)
+        if (fonte === 'offline' && window.location.search.includes('debug=1')) {
+            const badge = document.createElement('div');
+            badge.textContent = '⚡ Modo Offline Ativo';
+            badge.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #10b981;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: bold;
+                z-index: 9999;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            document.body.appendChild(badge);
+            setTimeout(() => badge.remove(), 3000);
+        }
         
     } catch (error) {
         console.error('❌ Erro ao renderizar GTs:', error);
         // Remover loadings em caso de erro
         document.querySelectorAll('.gt-loading').forEach(el => el.remove());
+        
+        // Mostrar mensagem de erro ao usuário
+        const gtHeaders = document.querySelectorAll('.gt-header');
+        gtHeaders.forEach(header => {
+            const errorHTML = `
+                <div style="
+                    padding: 20px;
+                    margin-top: 15px;
+                    background: rgba(239, 68, 68, 0.1);
+                    border: 2px solid rgba(239, 68, 68, 0.3);
+                    border-radius: 8px;
+                    color: #991b1b;
+                    font-size: 14px;
+                ">
+                    <strong>⚠️ Erro ao carregar membros</strong><br>
+                    Por favor, tente recarregar a página.
+                </div>
+            `;
+            header.insertAdjacentHTML('beforeend', errorHTML);
+        });
     }
 }
 
@@ -119,44 +178,35 @@ function criarAccordionGT(gt) {
     `;
     
     if (isAtivo && temMembros) {
-        // GT ativo - mostrar membros
-        html += `<div class="membros-grid">`;
+        html += '<div class="membros-grid">';
         
-        gt.membros.forEach((membro, index) => {
+        gt.membros.forEach(membro => {
             html += `
-                <div class="membro-card" data-animate="fade-up" data-delay="${index * 50}">
+                <div class="membro-card" data-animate="fade-up" data-delay="300">
                     <div class="membro-organizacao">
                         <i class="fas fa-building"></i>
-                        <strong>${membro.organizacao}</strong>
+                        <span>${membro.organizacao}</span>
                     </div>
-                    ${membro.tipo_organizacao ? `
-                        <div class="membro-tipo">${membro.tipo_organizacao}</div>
-                    ` : ''}
-                    ${membro.titular ? `
-                        <div class="membro-representante">
-                            <span class="representante-label">Titular:</span>
-                            <span class="representante-nome">${membro.titular}</span>
-                        </div>
-                    ` : ''}
-                    ${membro.suplente ? `
-                        <div class="membro-representante">
-                            <span class="representante-label">Suplente:</span>
-                            <span class="representante-nome">${membro.suplente}</span>
-                        </div>
-                    ` : ''}
+                    <div class="membro-tipo">${membro.tipo_organizacao}</div>
+                    <div class="membro-representante">
+                        <span class="representante-label">Titular</span>
+                        <span class="representante-nome">${membro.titular || 'Não informado'}</span>
+                    </div>
+                    <div class="membro-representante">
+                        <span class="representante-label">Suplente</span>
+                        <span class="representante-nome">${membro.suplente || 'Não informado'}</span>
+                    </div>
                 </div>
             `;
         });
         
-        html += `</div>`; // fim membros-grid
-        
+        html += '</div>';
     } else {
-        // GT desativado - mensagem "em breve"
         html += `
             <div class="membros-placeholder">
-                <i class="fas fa-hourglass-half"></i>
-                <p><strong>Em breve</strong></p>
-                <p>Representantes em definição</p>
+                <i class="fas fa-clock"></i>
+                <p>Grupo de Trabalho em Formação</p>
+                <p>Os membros participantes serão divulgados em breve.</p>
             </div>
         `;
     }
@@ -166,73 +216,66 @@ function criarAccordionGT(gt) {
         </div>
     `;
     
-    console.log(`✅ HTML do accordion GT ${gt.gt_numero} criado (${html.length} caracteres)`);
-    
     return html;
 }
 
 function inicializarAccordions() {
-    const toggles = document.querySelectorAll('.accordion-toggle');
+    console.log('🎯 Inicializando accordions...');
     
-    toggles.forEach(toggle => {
-        toggle.addEventListener('click', function() {
-            const accordion = this.parentElement;
-            const content = accordion.querySelector('.accordion-content');
-            const icon = this.querySelector('.accordion-icon');
-            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+    const accordions = document.querySelectorAll('.gt-membros-accordion');
+    console.log(`   Total de accordions encontrados: ${accordions.length}`);
+    
+    accordions.forEach((accordion, index) => {
+        const toggle = accordion.querySelector('.accordion-toggle');
+        const content = accordion.querySelector('.accordion-content');
+        
+        if (!toggle || !content) {
+            console.warn(`   ⚠️ Accordion ${index} está incompleto`);
+            return;
+        }
+        
+        toggle.addEventListener('click', () => {
+            console.log(`   🖱️ Click no accordion ${index}`);
             
-            // Toggle estado
+            const isExpanded = accordion.classList.contains('expanded');
+            
+            // Fechar todos os outros accordions
+            accordions.forEach(other => {
+                if (other !== accordion && other.classList.contains('expanded')) {
+                    other.classList.remove('expanded');
+                    const otherContent = other.querySelector('.accordion-content');
+                    const otherToggle = other.querySelector('.accordion-toggle');
+                    if (otherContent) otherContent.style.maxHeight = null;
+                    if (otherToggle) otherToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+            
+            // Toggle do accordion atual
             if (isExpanded) {
-                // Fechar
-                this.setAttribute('aria-expanded', 'false');
                 accordion.classList.remove('expanded');
-                content.style.maxHeight = '0';
-                icon.style.transform = 'rotate(0deg)';
+                content.style.maxHeight = null;
+                toggle.setAttribute('aria-expanded', 'false');
+                console.log(`   📦 Accordion ${index} fechado`);
             } else {
-                // Abrir
-                this.setAttribute('aria-expanded', 'true');
                 accordion.classList.add('expanded');
                 content.style.maxHeight = content.scrollHeight + 'px';
-                icon.style.transform = 'rotate(180deg)';
+                toggle.setAttribute('aria-expanded', 'true');
+                console.log(`   📂 Accordion ${index} aberto (altura: ${content.scrollHeight}px)`);
             }
         });
         
-        // Acessibilidade: permitir Enter e Space
-        toggle.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.click();
-            }
-        });
+        console.log(`   ✅ Accordion ${index} inicializado`);
     });
+    
+    console.log('✅ Todos os accordions inicializados!');
 }
 
 // ============================================
 // INICIALIZAÇÃO
 // ============================================
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Aguardar um pouco para garantir que ceni-api-client.js foi carregado
-    if (document.querySelector('.gt-section')) {
-        console.log('🚀 Detectada página de GTs');
-        
-        // Verificar se ceni-api-client.js foi carregado
-        if (typeof fetchCENIData === 'undefined') {
-            console.error('❌ ERRO: ceni-api-client.js não foi carregado ainda!');
-            console.log('⏳ Tentando novamente em 1 segundo...');
-            setTimeout(renderizarGTsMembros, 1000);
-        } else {
-            console.log('✅ ceni-api-client.js detectado, iniciando renderização...');
-            setTimeout(renderizarGTsMembros, 100);
-        }
-    } else {
-        console.log('ℹ️ Página não contém seções de GT, pulando renderização');
-    }
-});
-
-// Expor função globalmente
-if (window.CENI) {
-    window.CENI.renderizarGTsMembros = renderizarGTsMembros;
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderizarGTsMembros);
+} else {
+    renderizarGTsMembros();
 }
-
-console.log('✅ ceni-gts-dinamico.js carregado');
