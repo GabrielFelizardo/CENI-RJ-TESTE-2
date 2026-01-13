@@ -1,13 +1,14 @@
 /**
  * ============================================
- * CENI-GTS-DINAMICO V2 - COM OFFLINE SUPPORT
+ * CENI-GTS-DINAMICO - VERSÃO OFFLINE FINAL
  * ============================================
- * Busca dados offline primeiro (rápido)
- * Se falhar, busca da API (backup)
+ * ATENÇÃO: Este arquivo substitui completamente o antigo!
+ * Baixe e renomeie para: ceni-gts-dinamico.js
  */
 
 async function renderizarGTsMembros() {
     try {
+        console.log('🚀🚀🚀 VERSÃO OFFLINE CARREGADA - JANEIRO 2026 🚀🚀🚀');
         console.log('📋 Carregando membros dos GTs...');
         
         // ✨ ADICIONAR LOADING EM TODOS OS GT-HEADERS
@@ -42,25 +43,31 @@ async function renderizarGTsMembros() {
         // Verificar se função fetchCENIData existe
         if (typeof fetchCENIData !== 'function') {
             console.error('❌ fetchCENIData não está disponível! Verifique se ceni-api-client.js foi carregado.');
-            // Remover loadings
             document.querySelectorAll('.gt-loading').forEach(el => el.remove());
             return;
         }
         
-        // ✨ ESTRATÉGIA: Tentar OFFLINE primeiro, API como backup
+        // ✨✨✨ ESTRATÉGIA OFFLINE FIRST ✨✨✨
         let data;
         let fonte = 'offline';
         
+        console.log('⚡⚡⚡ TENTANDO MODO OFFLINE PRIMEIRO... ⚡⚡⚡');
+        
         try {
-            console.log('⚡ Tentando buscar dados OFFLINE...');
+            // TENTAR BUSCAR DADOS OFFLINE
             data = await fetchCENIData('membros-offline');
-            console.log('✅ Dados OFFLINE carregados!');
+            console.log('✅✅✅ DADOS OFFLINE CARREGADOS COM SUCESSO! ✅✅✅');
+            console.log('🚀 Fonte dos dados: OFFLINE (RÁPIDO)');
         } catch (offlineError) {
-            console.warn('⚠️ Dados offline não disponíveis, tentando API...', offlineError);
+            console.warn('⚠️ Dados offline não disponíveis:', offlineError);
+            console.log('🔄 Tentando buscar da API como backup...');
+            
             try {
+                // FALLBACK: BUSCAR DA API
                 data = await fetchCENIData('gts');
                 fonte = 'api';
-                console.log('✅ Dados da API carregados!');
+                console.log('✅ Dados da API carregados (fallback)');
+                console.log('⚠️ ATENÇÃO: Usando API - publicar membros para modo offline!');
             } catch (apiError) {
                 console.error('❌ Erro ao buscar da API também:', apiError);
                 throw new Error('Não foi possível carregar dados offline nem da API');
@@ -79,13 +86,12 @@ async function renderizarGTsMembros() {
             return;
         }
         
-        console.log(`✅ ${gtsData.length} GTs carregados (${fonte}):`, gtsData);
+        console.log(`✅ ${gtsData.length} GTs carregados (fonte: ${fonte}):`, gtsData);
         
-        // Verificar quantas seções GT existem no HTML
         const totalSecoes = document.querySelectorAll('.gt-section').length;
         console.log(`🔍 Seções GT encontradas no HTML: ${totalSecoes}`);
         
-        // Para cada GT (1 a 5), renderizar accordion
+        // Para cada GT, renderizar accordion
         gtsData.forEach(gt => {
             const gtSection = document.querySelector(`.gt-section.gt${gt.gt_numero}`);
             
@@ -94,11 +100,9 @@ async function renderizarGTsMembros() {
                 return;
             }
             
-            // Criar accordion
             const accordionHTML = criarAccordionGT(gt);
-            
-            // Inserir DENTRO do gt-header usando insertAdjacentHTML
             const gtHeader = gtSection.querySelector('.gt-header');
+            
             if (gtHeader) {
                 gtHeader.insertAdjacentHTML('beforeend', accordionHTML);
                 console.log(`✅ Accordion inserido no GT ${gt.gt_numero}`);
@@ -107,12 +111,11 @@ async function renderizarGTsMembros() {
             }
         });
         
-        // Inicializar funcionalidade dos accordions
         inicializarAccordions();
         
         console.log(`✅ Accordions dos GTs renderizados com sucesso (fonte: ${fonte})`);
         
-        // ✨ MOSTRAR BADGE DE FONTE (OPCIONAL - APENAS PARA DEBUG)
+        // ✨ MOSTRAR BADGE DE FONTE SE MODO DEBUG
         if (fonte === 'offline' && window.location.search.includes('debug=1')) {
             const badge = document.createElement('div');
             badge.textContent = '⚡ Modo Offline Ativo';
@@ -135,10 +138,8 @@ async function renderizarGTsMembros() {
         
     } catch (error) {
         console.error('❌ Erro ao renderizar GTs:', error);
-        // Remover loadings em caso de erro
         document.querySelectorAll('.gt-loading').forEach(el => el.remove());
         
-        // Mostrar mensagem de erro ao usuário
         const gtHeaders = document.querySelectorAll('.gt-header');
         gtHeaders.forEach(header => {
             const errorHTML = `
@@ -235,11 +236,9 @@ function inicializarAccordions() {
         }
         
         toggle.addEventListener('click', () => {
-            console.log(`   🖱️ Click no accordion ${index}`);
-            
             const isExpanded = accordion.classList.contains('expanded');
             
-            // Fechar todos os outros accordions
+            // Fechar todos os outros
             accordions.forEach(other => {
                 if (other !== accordion && other.classList.contains('expanded')) {
                     other.classList.remove('expanded');
@@ -250,17 +249,15 @@ function inicializarAccordions() {
                 }
             });
             
-            // Toggle do accordion atual
+            // Toggle atual
             if (isExpanded) {
                 accordion.classList.remove('expanded');
                 content.style.maxHeight = null;
                 toggle.setAttribute('aria-expanded', 'false');
-                console.log(`   📦 Accordion ${index} fechado`);
             } else {
                 accordion.classList.add('expanded');
                 content.style.maxHeight = content.scrollHeight + 'px';
                 toggle.setAttribute('aria-expanded', 'true');
-                console.log(`   📂 Accordion ${index} aberto (altura: ${content.scrollHeight}px)`);
             }
         });
         
@@ -279,3 +276,5 @@ if (document.readyState === 'loading') {
 } else {
     renderizarGTsMembros();
 }
+
+console.log('✅ ceni-gts-dinamico.js carregado');
